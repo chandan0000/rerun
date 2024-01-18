@@ -100,11 +100,10 @@ def _optional_mat3x3_to_arrow(mat: Mat3x3 | None) -> pa.Array:
 
     if mat is None:
         return pa.nulls(1, Mat3x3Type().storage_type)
-    else:
-        try:
-            return Mat3x3Batch(mat, strict=True).as_arrow_array().storage
-        except ValueError as err:
-            raise ValueError(f"mat3x3 must be compatible with Mat3x3: {err}")
+    try:
+        return Mat3x3Batch(mat, strict=True).as_arrow_array().storage
+    except ValueError as err:
+        raise ValueError(f"mat3x3 must be compatible with Mat3x3: {err}")
 
 
 def _optional_translation_to_arrow(translation: Vec3D | None) -> pa.array:
@@ -112,11 +111,10 @@ def _optional_translation_to_arrow(translation: Vec3D | None) -> pa.array:
 
     if translation is None:
         return pa.nulls(1, Vec3DType().storage_type)
-    else:
-        try:
-            return Vec3DBatch(translation.xyz, strict=True).as_arrow_array().storage
-        except ValueError as err:
-            raise ValueError(f"translation must be compatible with Vec3D: {err}")
+    try:
+        return Vec3DBatch(translation.xyz, strict=True).as_arrow_array().storage
+    except ValueError as err:
+        raise ValueError(f"translation must be compatible with Vec3D: {err}")
 
 
 def _optional_rotation_to_arrow(rotation: Rotation3D | None, storage_type: pa.DataType) -> pa.Array:
@@ -124,11 +122,10 @@ def _optional_rotation_to_arrow(rotation: Rotation3D | None, storage_type: pa.Da
 
     if rotation is None:
         return pa.nulls(1, storage_type)
-    else:
-        try:
-            return Rotation3DBatch(rotation, strict=True).as_arrow_array().storage
-        except ValueError as err:
-            raise ValueError(f"rotation must be compatible with Rotation3D: {err}")
+    try:
+        return Rotation3DBatch(rotation, strict=True).as_arrow_array().storage
+    except ValueError as err:
+        raise ValueError(f"rotation must be compatible with Rotation3D: {err}")
 
 
 def _build_struct_array_from_translation_mat3x3(

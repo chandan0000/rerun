@@ -26,7 +26,6 @@ class TranslationRotationScale3DExt:
     def translation__field_converter_override(data: Vec3DLike | None) -> Vec3D | None:
         if data is None:
             return None
-        else:
-            from . import Vec3D
+        from . import Vec3D
 
-            return Vec3D(data)
+        return Vec3D(data)

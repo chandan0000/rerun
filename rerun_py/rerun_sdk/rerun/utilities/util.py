@@ -26,10 +26,7 @@ def bounce_lerp(
 
     """
     tf = t % 1
-    if int(t) % 2 == 0:
-        return (1.0 - tf) * a + tf * b
-    else:
-        return tf * a + (1.0 - tf) * b
+    return (1.0 - tf) * a + tf * b if int(t) % 2 == 0 else tf * a + (1.0 - tf) * b
 
 
 def interleave(arr1: npt.NDArray[np.float64], arr2: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
@@ -47,6 +44,6 @@ def interleave(arr1: npt.NDArray[np.float64], arr2: npt.NDArray[np.float64]) -> 
     shape = list(arr1.shape)
     shape[0] *= 2
     arr = np.empty(shape, dtype=arr1.dtype)
-    arr[0::2] = arr1
+    arr[::2] = arr1
     arr[1::2] = arr2
     return arr

@@ -161,8 +161,7 @@ def compute_box_3d(
     corners_3d[0, :] += center[0]
     corners_3d[1, :] += center[1]
     corners_3d[2, :] += center[2]
-    bbox3d_raw = np.transpose(corners_3d)
-    return bbox3d_raw
+    return np.transpose(corners_3d)
 
 
 def log_line_segments(entity_path: str, bboxes_2d_filtered: npt.NDArray[np.float64], color: Color, label: str) -> None:
@@ -193,9 +192,6 @@ def log_line_segments(entity_path: str, bboxes_2d_filtered: npt.NDArray[np.float
     if valid_points.size > 0:
         centroid = valid_points.mean(axis=0)
         rr.log(f"{entity_path}/centroid", rr.Points2D(centroid, colors=color, labels=label))
-    else:
-        pass
-
     segments = [
         # bottom of bbox
         [bboxes_2d_filtered[0], bboxes_2d_filtered[1]],
@@ -277,9 +273,7 @@ def project_3d_bboxes_to_2d_keypoints(
     mask_x = (bboxes_2d[:, :, 0] >= 0) & (bboxes_2d[:, :, 0] < img_width)
     mask_y = (bboxes_2d[:, :, 1] >= 0) & (bboxes_2d[:, :, 1] < img_height)
     mask = mask_x & mask_y
-    bboxes_2d_filtered = np.where(mask[..., np.newaxis], bboxes_2d, np.nan)
-
-    return bboxes_2d_filtered
+    return np.where(mask[..., np.newaxis], bboxes_2d, np.nan)
 
 
 def log_camera(
@@ -359,8 +353,7 @@ def read_camera_from_world(traj_string: str) -> tuple[str, rr.TranslationRotatio
 def find_closest_frame_id(target_id: str, frame_ids: dict[str, Any]) -> str:
     """Finds the closest frame id to the target id."""
     target_value = float(target_id)
-    closest_id = min(frame_ids.keys(), key=lambda x: abs(float(x) - target_value))
-    return closest_id
+    return min(frame_ids.keys(), key=lambda x: abs(float(x) - target_value))
 
 
 def log_arkit(recording_path: Path, include_highres: bool) -> None:

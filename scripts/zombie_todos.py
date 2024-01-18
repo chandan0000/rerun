@@ -48,10 +48,8 @@ async def fetch_total_number_of_issue_pages(session):
         if response.status != 200:
             print(f"Error: Failed to fetch total pages. Status code: {response.status}")
             return None
-        link_header = response.headers.get("Link")
-        if link_header:
-            match = re.search(r'page=(\d+)>; rel="last"', link_header)
-            if match:
+        if link_header := response.headers.get("Link"):
+            if match := re.search(r'page=(\d+)>; rel="last"', link_header):
                 return int(match.group(1))
         return None
 

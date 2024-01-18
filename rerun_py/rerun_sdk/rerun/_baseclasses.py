@@ -72,8 +72,7 @@ class Archetype:
         for fld in fields(cls):
             if "component" in fld.metadata:
                 comp = getattr(self, fld.name)
-                datatype = getattr(comp, "type", None)
-                if datatype:
+                if datatype := getattr(comp, "type", None):
                     s += f"  {datatype.extension_name}<{datatype.storage_type}>(\n    {comp.to_pylist()}\n  )\n"
         s += ")"
 
@@ -81,7 +80,7 @@ class Archetype:
 
     @classmethod
     def archetype_name(cls) -> str:
-        return "rerun.archetypes." + cls.__name__
+        return f"rerun.archetypes.{cls.__name__}"
 
     @classmethod
     def indicator(cls) -> ComponentBatchLike:
@@ -226,10 +225,7 @@ class BaseBatch(Generic[T]):
         -------
         The Arrow array encapsulating the data.
         """
-        if data is None:
-            return None
-        else:
-            return cls(data)
+        return None if data is None else cls(data)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, BaseBatch):

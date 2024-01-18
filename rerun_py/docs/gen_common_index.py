@@ -56,7 +56,7 @@ def all_archetypes() -> list[str]:
             # Append the matched strings to the list
             quoted_strings.extend(matches)
 
-    assert len(quoted_strings) > 0, f"Found no archetypes in {file_path}"
+    assert quoted_strings, f"Found no archetypes in {file_path}"
     return quoted_strings
 
 
@@ -293,8 +293,7 @@ index_path = common_dir.joinpath("index.md")
 
 def make_slug(s: str) -> str:
     s = s.lower().strip()
-    s = re.sub(r"[\s]+", "_", s)
-    return s
+    return re.sub(r"[\s]+", "_", s)
 
 
 with mkdocs_gen_files.open(index_path, "w") as index_file:
@@ -321,7 +320,7 @@ overview of what's possible and how.
         if section.gen_page:
             # Turn the heading into a slug and add it to the nav
             md_name = make_slug(section.title)
-            md_file = md_name + ".md"
+            md_file = f"{md_name}.md"
             nav[section.title] = md_file
 
             # Write out the contents of this section

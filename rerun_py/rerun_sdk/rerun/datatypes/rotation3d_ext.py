@@ -37,7 +37,7 @@ class Rotation3DExt:
     def native_to_pa_array_override(data: Rotation3DArrayLike, data_type: pa.DataType) -> pa.Array:
         from . import Quaternion, QuaternionBatch, Rotation3D, RotationAxisAngle, RotationAxisAngleBatch
 
-        if isinstance(data, Rotation3D) or isinstance(data, RotationAxisAngle) or isinstance(data, Quaternion):
+        if isinstance(data, (Rotation3D, RotationAxisAngle, Quaternion)):
             data = [data]
 
         types: list[int] = []

@@ -90,11 +90,7 @@ class TensorDataExt:
         from . import TensorBuffer, TensorDimension
         from .tensor_data import _tensor_data__buffer__special_field_converter_override
 
-        if shape is not None:
-            resolved_shape = list(shape)
-        else:
-            resolved_shape = None
-
+        resolved_shape = list(shape) if shape is not None else None
         # Figure out the shape
         if array is not None:
             array = _to_numpy(array)
@@ -137,7 +133,7 @@ class TensorDataExt:
         elif array is not None:
             self.buffer = TensorBuffer(array.flatten())
 
-        if self.buffer.kind != "jpeg" and self.buffer.kind != "nv12":
+        if self.buffer.kind not in ["jpeg", "nv12"]:
             expected_buffer_size = prod(d.size for d in self.shape)
 
             if len(self.buffer.inner) != expected_buffer_size:

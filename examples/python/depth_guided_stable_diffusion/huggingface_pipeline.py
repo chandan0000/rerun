@@ -172,7 +172,6 @@ class StableDiffusionDepth2ImgPipeline(DiffusionPipeline):
                 cpu_offload(cpu_offloaded_model, device)
 
     @property
-    # Copied from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion.StableDiffusionPipeline._execution_device
     def _execution_device(self):
         r"""
         Returns the device on which the pipeline's models will be executed. After calling
@@ -181,14 +180,18 @@ class StableDiffusionDepth2ImgPipeline(DiffusionPipeline):
         """
         if self.device != torch.device("meta") or not hasattr(self.unet, "_hf_hook"):
             return self.device
-        for module in self.unet.modules():
-            if (
-                hasattr(module, "_hf_hook")
-                and hasattr(module._hf_hook, "execution_device")
-                and module._hf_hook.execution_device is not None
-            ):
-                return torch.device(module._hf_hook.execution_device)
-        return self.device
+        return next(
+            (
+                torch.device(module._hf_hook.execution_device)
+                for module in self.unet.modules()
+                if (
+                    hasattr(module, "_hf_hook")
+                    and hasattr(module._hf_hook, "execution_device")
+                    and module._hf_hook.execution_device is not None
+                )
+            ),
+            self.device,
+        )
 
     # Copied from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion.StableDiffusionPipeline._encode_prompt
     def _encode_prompt(self, prompt, device, num_images_per_prompt, do_classifier_free_guidance, negative_prompt):
@@ -346,8 +349,10 @@ class StableDiffusionDepth2ImgPipeline(DiffusionPipeline):
         if strength < 0 or strength > 1:
             raise ValueError(f"The value of strength should in [1.0, 1.0] but is {strength}")
 
-        if (callback_steps is None) or (
-            callback_steps is not None and (not isinstance(callback_steps, int) or callback_steps <= 0)
+        if (
+            callback_steps is None
+            or not isinstance(callback_steps, int)
+            or callback_steps <= 0
         ):
             raise ValueError(
                 f"`callback_steps` has to be a positive integer but is {callback_steps} of type"
@@ -395,7 +400,7 @@ class StableDiffusionDepth2ImgPipeline(DiffusionPipeline):
             deprecate("len(prompt) != len(image)", "1.0.0", deprecation_message, standard_warn=False)
             additional_image_per_prompt = batch_size // init_latents.shape[0]
             init_latents = torch.cat([init_latents] * additional_image_per_prompt * num_images_per_prompt, dim=0)
-        elif batch_size > init_latents.shape[0] and batch_size % init_latents.shape[0] != 0:
+        elif batch_size > init_latents.shape[0]:
             raise ValueError(
                 f"Cannot duplicate `image` of batch size {init_latents.shape[0]} to {batch_size} text prompts."
             )
@@ -407,16 +412,10 @@ class StableDiffusionDepth2ImgPipeline(DiffusionPipeline):
 
         # get latents
         init_latents = self.scheduler.add_noise(init_latents, noise, timestep)
-        latents = init_latents
-
-        return latents
+        return init_latents
 
     def prepare_depth_map(self, image, depth_map, batch_size, do_classifier_free_guidance, dtype, device):
-        if isinstance(image, PIL.Image.Image):
-            image = [image]
-        else:
-            image = [img for img in image]
-
+        image = [image] if isinstance(image, PIL.Image.Image) else list(image)
         if isinstance(image[0], PIL.Image.Image):
             width, height = image[0].size
         else:
@@ -620,7 +619,4 @@ class StableDiffusionDepth2ImgPipeline(DiffusionPipeline):
         if output_type == "pil":
             image = self.numpy_to_pil(image)
 
-        if not return_dict:
-            return (image,)
-
-        return ImagePipelineOutput(images=image)
+        return (image, ) if not return_dict else ImagePipelineOutput(images=image)

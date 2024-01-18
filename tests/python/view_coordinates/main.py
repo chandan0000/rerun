@@ -48,7 +48,15 @@ def log_camera(origin: npt.ArrayLike, label: str, xyz: rr.components.ViewCoordin
     pinhole_path = f"{cam_path}/{label}"
     rr.log(f"{cam_path}/indicator", rr.Points3D([0, 0, 0], colors=[255, 255, 255], labels=label))
     rr.log(cam_path, rr.Transform3D(translation=origin))
-    rr.log(cam_path + "/arrow", rr.Arrows3D(origins=[0, 0, 0], vectors=forward, colors=[255, 255, 255], radii=0.025))
+    rr.log(
+        f"{cam_path}/arrow",
+        rr.Arrows3D(
+            origins=[0, 0, 0],
+            vectors=forward,
+            colors=[255, 255, 255],
+            radii=0.025,
+        ),
+    )
     rr.log(
         pinhole_path,
         rr.Pinhole(

@@ -45,11 +45,7 @@ class KeypointId(KeypointIdExt):
         return int(self.id)
 
 
-if TYPE_CHECKING:
-    KeypointIdLike = Union[KeypointId, int]
-else:
-    KeypointIdLike = Any
-
+KeypointIdLike = Union[KeypointId, int] if TYPE_CHECKING else Any
 KeypointIdArrayLike = Union[KeypointId, Sequence[KeypointIdLike], int, npt.ArrayLike]
 
 

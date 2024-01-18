@@ -103,7 +103,7 @@ class ImageExt:
         num_non_empty_dims = len(non_empty_dims)
 
         # TODO(#3239): What `recording` should we be passing here? How should we be getting it?
-        if num_non_empty_dims < 2 or 3 < num_non_empty_dims:
+        if num_non_empty_dims < 2 or num_non_empty_dims > 3:
             _send_warning_or_raise(f"Expected image, got array of shape {shape_dims}", 1, recording=None)
 
         if num_non_empty_dims == 3:

@@ -266,7 +266,7 @@ def main() -> None:
         build_demo_examples()
 
     examples = list(collect_examples())
-    assert len(examples) > 0, "No examples found"
+    assert examples, "No examples found"
 
     render_index(examples)
     render_examples(examples)

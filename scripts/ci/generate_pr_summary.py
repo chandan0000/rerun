@@ -56,8 +56,11 @@ def generate_pr_summary(github_token: str, github_repository: str, pr_number: in
             builds_bucket.blob(f"commit/{commit_short}/rerun_c/macos-arm/librerun_c.a"),
             builds_bucket.blob(f"commit/{commit_short}/rerun_c/macos-intel/librerun_c.a"),
         ]
-        rerun_libraries = [f"https://build.rerun.io/{blob.name}" for blob in rerun_libraries_blobs if blob.exists()]
-        if rerun_libraries:
+        if rerun_libraries := [
+            f"https://build.rerun.io/{blob.name}"
+            for blob in rerun_libraries_blobs
+            if blob.exists()
+        ]:
             print(f"Found rerun_c libraries for commit: {commit_short}")
             found["rerun_c_libraries"] = rerun_libraries
 
@@ -69,15 +72,21 @@ def generate_pr_summary(github_token: str, github_repository: str, pr_number: in
 
         # Check if there are notebook results
         notebook_blobs = list(builds_bucket.list_blobs(prefix=f"commit/{commit_short}/notebooks"))
-        notebooks = [f"https://build.rerun.io/{blob.name}" for blob in notebook_blobs if blob.name.endswith(".html")]
-        if notebooks:
+        if notebooks := [
+            f"https://build.rerun.io/{blob.name}"
+            for blob in notebook_blobs
+            if blob.name.endswith(".html")
+        ]:
             print(f"Found notebooks for commit: {commit_short}")
             found["notebooks"] = notebooks
 
         # Get the wheel files for the commit
         wheel_blobs = list(builds_bucket.list_blobs(prefix=f"commit/{commit_short}/wheels"))
-        wheels = [f"https://build.rerun.io/{blob.name}" for blob in wheel_blobs if blob.name.endswith(".whl")]
-        if wheels:
+        if wheels := [
+            f"https://build.rerun.io/{blob.name}"
+            for blob in wheel_blobs
+            if blob.name.endswith(".whl")
+        ]:
             print(f"Found wheels for commit: {commit_short}")
             found["wheels"] = wheels
 

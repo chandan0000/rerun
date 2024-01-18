@@ -32,11 +32,7 @@ class Utf8(Utf8Ext):
         return str(self.value)
 
 
-if TYPE_CHECKING:
-    Utf8Like = Union[Utf8, str]
-else:
-    Utf8Like = Any
-
+Utf8Like = Union[Utf8, str] if TYPE_CHECKING else Any
 Utf8ArrayLike = Union[Utf8, Sequence[Utf8Like], str, Sequence[str]]
 
 

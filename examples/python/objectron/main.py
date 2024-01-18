@@ -98,9 +98,7 @@ def read_annotations(dirpath: Path) -> Sequence:
     print(f"loading annotations from {path}")
     data = Path(path).read_bytes()
 
-    seq = Sequence().parse(data)
-
-    return seq
+    return Sequence().parse(data)
 
 
 def log_ar_frames(samples: Iterable[SampleARFrame], seq: Sequence) -> None:

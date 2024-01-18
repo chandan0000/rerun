@@ -46,7 +46,7 @@ def build_color_grid(x_count: int = 10, y_count: int = 10, z_count: int = 10, tw
         slice(-10, 10, z_count * 1j),
     ]
 
-    angle = np.linspace(-float(twist) / 2, float(twist) / 2, z_count)
+    angle = np.linspace(-twist / 2, twist / 2, z_count)
     for z in range(z_count):
         xv, yv, zv = grid[:, :, :, z]
         rot_xv = xv * cos(angle[z]) - yv * sin(angle[z])

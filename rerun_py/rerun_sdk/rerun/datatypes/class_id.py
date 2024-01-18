@@ -38,11 +38,7 @@ class ClassId(ClassIdExt):
         return int(self.id)
 
 
-if TYPE_CHECKING:
-    ClassIdLike = Union[ClassId, int]
-else:
-    ClassIdLike = Any
-
+ClassIdLike = Union[ClassId, int] if TYPE_CHECKING else Any
 ClassIdArrayLike = Union[ClassId, Sequence[ClassIdLike], int, npt.ArrayLike]
 
 

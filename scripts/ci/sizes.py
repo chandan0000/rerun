@@ -143,7 +143,7 @@ def compare(
 
             rows.append((name, f"{value} {unit}", "(deleted)", "-100%"))
 
-    if len(rows) > 0:
+    if rows:
         sys.stdout.write(render_table_rows(rows, headers))
         sys.stdout.flush()
 

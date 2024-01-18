@@ -78,7 +78,3 @@ class SegmentationImageExt:
                 ],
             ).cast(tensor_data_arrow.storage.type)
         )
-
-        # TODO(jleibs): Should we enforce specific names on images? Specifically, what if the existing names are wrong.
-
-        return tensor_data

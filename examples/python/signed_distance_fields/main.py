@@ -69,8 +69,10 @@ def read_mesh(path: Path) -> Trimesh:
 @log_timing_decorator("global/voxel_sdf", "DEBUG")  # type: ignore[misc]
 def compute_voxel_sdf(mesh: Trimesh, resolution: int) -> npt.NDArray[np.float32]:
     print("computing voxel-based SDF")
-    voxvol = np.array(mesh_to_sdf.mesh_to_voxels(mesh, voxel_resolution=resolution), dtype=np.float32)
-    return voxvol
+    return np.array(
+        mesh_to_sdf.mesh_to_voxels(mesh, voxel_resolution=resolution),
+        dtype=np.float32,
+    )
 
 
 @log_timing_decorator("global/sample_sdf", "DEBUG")  # type: ignore[misc]

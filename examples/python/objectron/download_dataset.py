@@ -41,16 +41,14 @@ def ensure_downloaded(src_url: str, dst_path: Path) -> None:
 
 def find_path_if_downloaded(recording_name: str, local_dataset_dir: Path) -> Path | None:
     local_recording_dir = local_dataset_dir / recording_name
-    paths = list(local_recording_dir.glob(f"**/{ANNOTATIONS_FILENAME}"))
-    if paths:
+    if paths := list(local_recording_dir.glob(f"**/{ANNOTATIONS_FILENAME}")):
         return paths[0].parent
     return None
 
 
 def get_recording_id_from_name(recording_name: str) -> str:
     recording_ids_raw = requests.get(f"{DATASET_BASE_URL}/v1/index/{recording_name}_annotations_test").text
-    recording_id = recording_ids_raw.split("\n")[0]
-    return recording_id
+    return recording_ids_raw.split("\n")[0]
 
 
 def ensure_opencv_version_ok() -> None:

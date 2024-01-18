@@ -51,7 +51,7 @@ class LintJob:
         if not self.accepts_files:
             files = []
 
-        if len(files) == 0:
+        if not files:
             if not self.allow_no_filter:
                 logging.info(f"SKIP: {self.command} (no-change-filter not supported)")
                 return True

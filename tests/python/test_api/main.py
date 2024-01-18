@@ -514,7 +514,13 @@ def main() -> None:
     if not args.split_recordings:
         rec = rr.script_setup(args, f"rerun_example_test_api_{args.test}")
 
-    if args.test in ["most", "all"]:
+    if args.test != "most" and args.test != "all" and args.split_recordings:
+        with rr.script_setup(args, f"rerun_example_test_api/{args.test}"):
+            tests[args.test]()
+    elif args.test not in ["most", "all"]:
+        tests[args.test]()
+
+    else:
         print(f"Running {args.test} tests…")
 
         threads = []
@@ -540,13 +546,6 @@ def main() -> None:
 
         for t in threads:
             t.join()
-    else:
-        if args.split_recordings:
-            with rr.script_setup(args, f"rerun_example_test_api/{args.test}"):
-                tests[args.test]()
-        else:
-            tests[args.test]()
-
     rr.script_teardown(args)
 
 

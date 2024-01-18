@@ -67,20 +67,20 @@ class AnyBatchValue(ComponentBatchLike):
                 self.pa_array = value
             elif hasattr(value, "as_arrow_array"):
                 self.pa_array = value.as_arrow_array()
-            else:
-                if np_type is not None:
-                    if value is None:
-                        value = []
-                    np_value = np.atleast_1d(np.array(value, copy=False, dtype=np_type))
-                    self.pa_array = pa.array(np_value, type=pa_type)
+            elif np_type is None:
+                if value is None:
+                    if not drop_untyped_nones:
+                        raise ValueError("Cannot convert None to arrow array. Type is unknown.")
                 else:
-                    if value is None:
-                        if not drop_untyped_nones:
-                            raise ValueError("Cannot convert None to arrow array. Type is unknown.")
-                    else:
-                        np_value = np.atleast_1d(np.array(value, copy=False))
-                        self.pa_array = pa.array(np_value)
-                        ANY_VALUE_TYPE_REGISTRY[name] = (np_value.dtype, self.pa_array.type)
+                    np_value = np.atleast_1d(np.array(value, copy=False))
+                    self.pa_array = pa.array(np_value)
+                    ANY_VALUE_TYPE_REGISTRY[name] = (np_value.dtype, self.pa_array.type)
+
+            else:
+                if value is None:
+                    value = []
+                np_value = np.atleast_1d(np.array(value, copy=False, dtype=np_type))
+                self.pa_array = pa.array(np_value, type=pa_type)
 
     def is_valid(self) -> bool:
         return self.pa_array is not None

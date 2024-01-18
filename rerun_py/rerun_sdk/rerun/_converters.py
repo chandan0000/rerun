@@ -58,9 +58,7 @@ def int_or_none(data: SupportsInt) -> int:
 
 
 def int_or_none(data: SupportsInt | None) -> int | None:
-    if data is None:
-        return None
-    return int(data)
+    return None if data is None else int(data)
 
 
 @overload
@@ -74,9 +72,7 @@ def float_or_none(data: SupportsFloat) -> float:
 
 
 def float_or_none(data: SupportsFloat | None) -> float | None:
-    if data is None:
-        return None
-    return float(data)
+    return None if data is None else float(data)
 
 
 @overload
@@ -90,9 +86,7 @@ def bool_or_none(data: bool) -> bool:
 
 
 def bool_or_none(data: bool | None) -> bool | None:
-    if data is None:
-        return None
-    return bool(data)
+    return None if data is None else bool(data)
 
 
 @overload
@@ -106,9 +100,7 @@ def str_or_none(data: str) -> str:
 
 
 def str_or_none(data: str | None) -> str | None:
-    if data is None:
-        return None
-    return str(data)
+    return None if data is None else str(data)
 
 
 def to_np_uint8(data: npt.ArrayLike | bytes) -> npt.NDArray[np.uint8]:
@@ -131,10 +123,7 @@ def to_np_uint16(data: npt.ArrayLike) -> npt.NDArray[np.uint16]:
 
 def to_np_uint32(data: npt.ArrayLike | None) -> npt.NDArray[np.uint32] | None:
     """Convert some data to a numpy uint32 array."""
-    if data is not None:
-        return np.asarray(data, dtype=np.uint32)
-    else:
-        return None
+    return np.asarray(data, dtype=np.uint32) if data is not None else None
 
 
 def to_np_uint64(data: npt.ArrayLike) -> npt.NDArray[np.uint64]:

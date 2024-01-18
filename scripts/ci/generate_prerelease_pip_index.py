@@ -42,7 +42,7 @@ def generate_pip_index(title: str, dir: str, upload: bool, check: bool) -> None:
     if check:
         wheel_utils.check_expected_wheels(wheels)
 
-    if len(wheels) > 0:
+    if wheels:
         print(f"Found wheels: {wheels}")
         found["wheels"] = wheels
         found["title"] = title

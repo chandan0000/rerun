@@ -30,13 +30,12 @@ def load_scene(path: Path) -> trimesh.Scene:
 # NOTE: The scene hierarchy will look different compared to the Rust example, as this is using the
 # trimesh hierarchy, not the raw glTF hierarchy.
 def log_scene(scene: trimesh.Scene, node: str, path: str | None = None) -> None:
-    path = path + "/" + node if path else node
+    path = f"{path}/{node}" if path else node
 
     parent = scene.graph.transforms.parents.get(node)
     children = scene.graph.transforms.children.get(node)
 
-    node_data = scene.graph.get(frame_to=node, frame_from=parent)
-    if node_data:
+    if node_data := scene.graph.get(frame_to=node, frame_from=parent):
         # Log the transform between this node and its direct parent (if it has one!).
         if parent:
             # TODO(andreas): We should support 4x4 matrices directly
@@ -49,9 +48,7 @@ def log_scene(scene: trimesh.Scene, node: str, path: str | None = None) -> None:
                 ),
             )
 
-        # Log this node's mesh, if it has one.
-        mesh = cast(trimesh.Trimesh, scene.geometry.get(node_data[1]))
-        if mesh:
+        if mesh := cast(trimesh.Trimesh, scene.geometry.get(node_data[1])):
             vertex_colors = None
             mesh_material = None
             try:

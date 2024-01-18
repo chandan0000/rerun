@@ -173,7 +173,7 @@ class OPFProject:
 
             # RUB coordinate system specified in https://pix4d.github.io/opf-spec/specification/projected_input_cameras.html#coordinate-system-specification
             rr.log(
-                entity + "/image",
+                f"{entity}/image",
                 rr.Pinhole(
                     resolution=sensor.image_size_px,
                     focal_length=calib_sensor.internals.focal_length_px,
@@ -184,9 +184,17 @@ class OPFProject:
 
             if jpeg_quality is not None:
                 with Image.open(self.path.parent / camera.uri) as img:
-                    rr.log(entity + "/image/rgb", rr.Image(np.array(img)).compress(jpeg_quality=jpeg_quality))
+                    rr.log(
+                        f"{entity}/image/rgb",
+                        rr.Image(np.array(img)).compress(
+                            jpeg_quality=jpeg_quality
+                        ),
+                    )
             else:
-                rr.log(entity + "/image/rgb", rr.ImageEncoded(path=self.path.parent / camera.uri))
+                rr.log(
+                    f"{entity}/image/rgb",
+                    rr.ImageEncoded(path=self.path.parent / camera.uri),
+                )
 
 
 def main() -> None:

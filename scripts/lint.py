@@ -47,23 +47,16 @@ def is_valid_todo_part(part: str) -> bool:
     if re.match(r"^[\w/-]*#\d+$", part):
         return True  # org/repo#42 or #42
 
-    if re.match(r"^[a-z][a-z0-9_]+$", part):
-        return True  # user-name
-
-    return False
+    return bool(re.match(r"^[a-z][a-z0-9_]+$", part))
 
 
 def lint_line(
     line: str, prev_line: str | None, file_extension: str = "rs", is_in_docstring: bool = False
 ) -> str | None:
-    if line == "":
+    if not line:
         return None
 
-    if prev_line is None:
-        prev_line_stripped = ""
-    else:
-        prev_line_stripped = prev_line.strip()
-
+    prev_line_stripped = "" if prev_line is None else prev_line.strip()
     if line[-1].isspace():
         return "Trailing whitespace"
 
@@ -163,17 +156,14 @@ def lint_line(
 
     # Methods that return Self should usually be marked #[inline] or #[inline(always)] since they indicate a builder.
     if re.search(r"\(mut self.*-> Self", line):
-        if prev_line_stripped != "#[inline]" and prev_line_stripped != "#[inline(always)]":
+        if prev_line_stripped not in ["#[inline]", "#[inline(always)]"]:
             return "Builder methods impls should be marked #[inline]"
 
-    # Deref impls should be marked #[inline] or #[inline(always)].
-    if "fn deref(&self)" in line or "fn deref_mut(&mut self)" in line:
-        if prev_line_stripped != "#[inline]" and prev_line_stripped != "#[inline(always)]":
+    if prev_line_stripped not in ["#[inline]", "#[inline(always)]"]:
+        if "fn deref(&self)" in line or "fn deref_mut(&mut self)" in line:
             return "Deref/DerefMut impls should be marked #[inline]"
 
-    # Deref impls should be marked #[inline] or #[inline(always)].
-    if "fn as_ref(&self)" in line or "fn borrow(&self)" in line:
-        if prev_line_stripped != "#[inline]" and prev_line_stripped != "#[inline(always)]":
+        if "fn as_ref(&self)" in line or "fn borrow(&self)" in line:
             return "as_ref/borrow implementations should be marked #[inline]"
 
     if any(s in line for s in (": &dyn std::any::Any", ": &mut dyn std::any::Any", ": &dyn Any", ": &mut dyn Any")):
@@ -339,7 +329,7 @@ re_docstring = re.compile(r"^\s*///")
 def is_missing_blank_line_between(prev_line: str, line: str) -> bool:
     def is_empty(line: str) -> bool:
         return (
-            line == ""
+            not line
             or line.startswith("#")
             or line.startswith("//")
             or line.endswith("{")
@@ -370,14 +360,7 @@ def is_missing_blank_line_between(prev_line: str, line: str) -> bool:
         if prev_line.endswith(",") and line.startswith("impl"):
             return False
 
-        if prev_line.endswith("*"):
-            return False  # maybe in a macro
-
-        if prev_line.endswith('r##"'):
-            return False  # part of a multi-line string
-
-        return True
-
+        return False if prev_line.endswith("*") else not prev_line.endswith('r##"')
     return False
 
 
@@ -476,8 +459,6 @@ def test_lint_vertical_spacing() -> None:
         errors, _ = lint_vertical_spacing(code.split("\n"))
         assert len(errors) > 0, f"expected this to fail:\n{code}"
 
-    pass
-
 
 # -----------------------------------------------------------------------------
 
@@ -559,8 +540,6 @@ def test_lint_workspace_deps() -> None:
     for code in should_fail:
         errors, _ = lint_workspace_deps(code.split("\n"))
         assert len(errors) > 0, f"expected this to fail:\n{code}"
-
-    pass
 
 
 # -----------------------------------------------------------------------------
@@ -728,8 +707,8 @@ def lint_file(filepath: str, args: Any) -> int:
             num_errors += 1
             print(source.error(error, line_nr=line_nr))
 
-    if filepath.endswith(".hpp"):
-        if not any(line.startswith("#pragma once") for line in source.lines):
+    if not any(line.startswith("#pragma once") for line in source.lines):
+        if filepath.endswith(".hpp"):
             print(source.error("Missing `#pragma once` in C++ header file"))
             num_errors += 1
 

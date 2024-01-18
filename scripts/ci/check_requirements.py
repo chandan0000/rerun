@@ -21,7 +21,7 @@ def main() -> None:
         if line not in requirements:
             missing.append(line)
 
-    if len(missing) != 0:
+    if missing:
         print("\n`examples/python/requirements.txt` is missing the following requirements:")
         for line in missing:
             print(line)

@@ -61,10 +61,10 @@ def cargo(
     dry_run: bool = False,
     capture: bool = False,
 ) -> Any:
-    cmd = [CARGO_PATH] + args.split()
     # print(f"> {subprocess.list2cmdline(cmd)}")
     if not dry_run:
         stderr = subprocess.STDOUT if capture else None
+        cmd = [CARGO_PATH] + args.split()
         subprocess.check_output(cmd, cwd=cwd, env=env, stderr=stderr)
 
 
@@ -172,7 +172,7 @@ def get_sorted_publishable_crates(ctx: Context, crates: dict[str, Crate]) -> dic
 
     visited: dict[str, bool] = {}
     output: dict[str, Crate] = {}
-    for name in crates.keys():
+    for name in crates:
         helper(ctx, crates, name, output, visited)
     return output
 
@@ -310,7 +310,7 @@ def bump_dependency_versions(
         if isinstance(info, str):
             ctx.error(
                 f"{crate}.{dependency.name} should be specified as:",
-                f'  {dependency.name} = {{ version = "' + info + '" }',
+                f'  {dependency.name} = {{ version = "{info}' + '" }',
             )
         elif "version" in info:
             pin_prefix = "=" if new_version.prerelease is not None else ""
@@ -395,10 +395,7 @@ def is_already_published(version: str, crate: Crate) -> bool:
 
     # crate has been uploaded, check every version against what we're uploading
     versions: list[str] = [version["num"] for version in body["versions"]]
-    for uploaded_version in versions:
-        if uploaded_version == version:
-            return True
-    return False
+    return version in versions
 
 
 def parse_retry_delay_secs(error_message: str) -> float | None:
@@ -459,10 +456,11 @@ def publish_unpublished_crates_in_parallel(all_crates: dict[str, Crate], version
     print("Building dependency graph…")
     dependency_graph: dict[str, list[str]] = {}
     for name, crate in unpublished_crates.items():
-        dependencies = []
-        for dependency in crate_deps(crate.manifest):
-            if dependency.name in unpublished_crates:
-                dependencies.append(dependency.name)
+        dependencies = [
+            dependency.name
+            for dependency in crate_deps(crate.manifest)
+            if dependency.name in unpublished_crates
+        ]
         dependency_graph[name] = dependencies
 
     # walk the dependency graph in parallel and publish each crate
@@ -508,11 +506,7 @@ def get_latest_published_version(crate_name: str) -> str | None:
         else:
             raise Exception(f"failed to get crate {crate_name}: {detail}")
 
-    if "versions" not in body:
-        return None
-
-    # response orders versions by semver
-    return body["versions"][0]["num"]  # type: ignore [no-any-return]
+    return None if "versions" not in body else body["versions"][0]["num"]
 
 
 class Target(Enum):
@@ -533,10 +527,10 @@ def get_version(target: Target | None) -> VersionInfo:
             print("this script expects the format `release-x.y.z-meta.N`")
             exit(1)
     elif target is Target.CratesIo:
-        latest_published_version = get_latest_published_version("rerun")
-        if not latest_published_version:
+        if latest_published_version := get_latest_published_version("rerun"):
+            current_version = VersionInfo.parse(latest_published_version)
+        else:
             raise Exception("Failed to get latest published version for `rerun` crate")
-        current_version = VersionInfo.parse(latest_published_version)
     else:
         root: dict[str, Any] = tomlkit.parse(Path("Cargo.toml").read_text())
         current_version = VersionInfo.parse(root["workspace"]["package"]["version"])
@@ -552,10 +546,10 @@ def print_version(target: Target | None, finalize: bool = False, pre_id: bool = 
 
     if pre_id:
         sys.stdout.write(str(current_version.prerelease.split(".", 1)[0]))
-        sys.stdout.flush()
     else:
         sys.stdout.write(str(current_version))
-        sys.stdout.flush()
+
+    sys.stdout.flush()
 
 
 def main() -> None:

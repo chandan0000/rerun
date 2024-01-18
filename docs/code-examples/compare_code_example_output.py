@@ -2,6 +2,7 @@
 
 """Runs all our code-examples, for all our languages, and compares the .rrd they output."""
 
+
 from __future__ import annotations
 
 import argparse
@@ -12,7 +13,9 @@ import time
 from os import listdir
 from os.path import isfile, join
 
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../../scripts/")
+sys.path.append(
+    f"{os.path.dirname(os.path.realpath(__file__))}/../../scripts/"
+)
 from roundtrip_utils import roundtrip_env, run, run_comparison  # noqa
 
 # fmt: off
@@ -122,9 +125,7 @@ def main() -> None:
             if extension == ".cpp" and not args.no_cpp or extension == ".py" and not args.no_py or extension == ".rs"
         ]
 
-    examples = list(set(examples))
-    examples.sort()
-
+    examples = sorted(set(examples))
     print("----------------------------------------------------------")
 
     active_languages = ["rust"]

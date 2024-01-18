@@ -88,29 +88,28 @@ def image_from_clipboard() -> Image:
 
     On Mac, `PIL.ImageGrab.grabclipboard()` compresses to JPG. This function uses the same code but uses PNG instead.
     """
-    if sys.platform == "darwin":
-        fh, filepath = tempfile.mkstemp(".png")
-        os.close(fh)
-        commands = [
-            'set theFile to (open for access POSIX file "' + filepath + '" with write permission)',
-            "try",
-            "    write (the clipboard as «class PNGf») to theFile",
-            "end try",
-            "close access theFile",
-        ]
-        script = ["osascript"]
-        for command in commands:
-            script += ["-e", command]
-        subprocess.call(script)
-
-        im = None
-        if os.stat(filepath).st_size != 0:
-            im = PIL.Image.open(filepath)
-            im.load()
-        os.unlink(filepath)
-        return im
-    else:
+    if sys.platform != "darwin":
         return PIL.ImageGrab.grabclipboard()
+    fh, filepath = tempfile.mkstemp(".png")
+    os.close(fh)
+    commands = [
+        f'set theFile to (open for access POSIX file "{filepath}" with write permission)',
+        "try",
+        "    write (the clipboard as «class PNGf») to theFile",
+        "end try",
+        "close access theFile",
+    ]
+    script = ["osascript"]
+    for command in commands:
+        script += ["-e", command]
+    subprocess.call(script)
+
+    im = None
+    if os.stat(filepath).st_size != 0:
+        im = PIL.Image.open(filepath)
+        im.load()
+    os.unlink(filepath)
+    return im
 
 
 class Uploader:

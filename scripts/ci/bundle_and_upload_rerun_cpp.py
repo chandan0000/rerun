@@ -125,19 +125,25 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory() as scratch_dir:
         package_name = "rerun_cpp_sdk"
-        package_dir = scratch_dir + "/" + package_name
+        package_dir = f"{scratch_dir}/{package_name}"
         os.mkdir(package_dir)
 
-        download_rerun_c(package_dir + "/lib", git_hash, args.platform_filter)
+        download_rerun_c(f"{package_dir}/lib", git_hash, args.platform_filter)
 
         logging.info("Copying files…")
         shutil.copytree(
-            src="rerun_cpp/", dst=package_dir + "/", ignore=shutil.ignore_patterns("tests"), dirs_exist_ok=True
+            src="rerun_cpp/",
+            dst=f"{package_dir}/",
+            ignore=shutil.ignore_patterns("tests"),
+            dirs_exist_ok=True,
         )
 
         logging.info(f"Packaging {package_dir}.zip…")
         rerun_zip = shutil.make_archive(
-            scratch_dir + "/" + package_name, "zip", root_dir=scratch_dir, base_dir=package_name
+            f"{scratch_dir}/{package_name}",
+            "zip",
+            root_dir=scratch_dir,
+            base_dir=package_name,
         )
 
         if args.local_path is not None:

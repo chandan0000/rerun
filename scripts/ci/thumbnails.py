@@ -55,7 +55,7 @@ def update() -> None:
             assert end != -1
 
         (example.path / "README.md").write_text(
-            example.readme[:start] + f"thumbnail_dimensions: [{width}, {height}]" + example.readme[end:]
+            f"{example.readme[:start]}thumbnail_dimensions: [{width}, {height}]{example.readme[end:]}"
         )
 
         print(f"✔ {example.path}")

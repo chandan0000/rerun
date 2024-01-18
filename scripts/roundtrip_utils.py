@@ -16,10 +16,9 @@ def get_repo_root() -> str:
     global repo_root
     if repo_root is not None:
         return repo_root
-    else:
-        get_rev_parse = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True)
-        assert get_rev_parse.returncode == 0
-        return get_rev_parse.stdout.decode("utf-8").strip()
+    get_rev_parse = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True)
+    assert get_rev_parse.returncode == 0
+    return get_rev_parse.stdout.decode("utf-8").strip()
 
 
 def run(
@@ -58,9 +57,7 @@ def roundtrip_env(*, save_path: str | None = None) -> dict[str, str]:
 
 def cmake_configure(release: bool, env: dict[str, str]) -> None:
     os.makedirs(cpp_build_dir, exist_ok=True)
-    build_type = "Debug"
-    if release:
-        build_type = "Release"
+    build_type = "Release" if release else "Debug"
     # TODO(andreas): We should pixi for the prepare so we can ensure we have build tooling ready
     configure_args = [
         "cmake",
@@ -77,10 +74,7 @@ def cmake_configure(release: bool, env: dict[str, str]) -> None:
 
 
 def cmake_build(target: str, release: bool) -> None:
-    config = "Debug"
-    if release:
-        config = "Release"
-
+    config = "Release" if release else "Debug"
     build_process_args = [
         "cmake",
         "--build",

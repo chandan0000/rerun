@@ -109,7 +109,7 @@ def main() -> None:
 
         if "👀 needs triage" in labels:
             print(f"{html_url} by {author} needs triage")
-        elif len(labels) == 0:
+        elif not labels:
             print(f"{html_url} by {author} has no labels")
         elif comments == 0 and state == "open" and author not in OFFICIAL_RERUN_DEVS:
             print(f"{html_url} by {author} has {comments} comments")

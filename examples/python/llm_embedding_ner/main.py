@@ -39,7 +39,7 @@ def log_tokenized_text(token_words: list[str]) -> None:
         if token_word.startswith("##"):
             clean_token_word = token_word[2:]
         else:
-            clean_token_word = " " + token_word
+            clean_token_word = f" {token_word}"
 
         markdown += f"[{clean_token_word}](recording://umap_embeddings[#{i}])"
     rr.log("tokenized_text", rr.TextDocument(markdown, media_type=rr.MediaType.MARKDOWN))
@@ -59,11 +59,7 @@ def log_ner_results(ner_results: list[dict[str, Any]]) -> None:
             current_entity_set = entity_sets[entity_class[2:]]
             current_entity_name = word
         elif current_entity_name is not None:
-            if word.startswith("##"):
-                current_entity_name += word[2:]
-            else:
-                current_entity_name += f" {word}"
-
+            current_entity_name += word[2:] if word.startswith("##") else f" {word}"
     named_entities_str = ""
     if "PER" in entity_sets:
         named_entities_str += f"Persons: {', '.join(entity_sets['PER'])}\n\n"
@@ -94,12 +90,8 @@ def entity_per_token(token_words: list[str], ner_results: list[dict[str, Any]]) 
             current_entity_name = word
         elif current_entity_name is not None:
             current_entity_indices.append(token_index)
-            if word.startswith("##"):
-                current_entity_name += word[2:]
-            else:
-                current_entity_name += f" {word}"
-    entity_per_token = [index_to_entity[i] for i in range(len(token_words))]
-    return entity_per_token
+            current_entity_name += word[2:] if word.startswith("##") else f" {word}"
+    return [index_to_entity[i] for i in range(len(token_words))]
 
 
 def run_llm_ner(text: str) -> None:

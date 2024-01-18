@@ -46,11 +46,7 @@ class DrawOrder(DrawOrderExt):
         return float(self.value)
 
 
-if TYPE_CHECKING:
-    DrawOrderLike = Union[DrawOrder, float]
-else:
-    DrawOrderLike = Any
-
+DrawOrderLike = Union[DrawOrder, float] if TYPE_CHECKING else Any
 DrawOrderArrayLike = Union[DrawOrder, Sequence[DrawOrderLike], float, npt.NDArray[np.float32]]
 
 

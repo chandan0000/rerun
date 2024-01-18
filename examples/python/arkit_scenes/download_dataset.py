@@ -116,8 +116,6 @@ def download_file(url: str, file_name: str, dst: Path) -> bool:
             print(f"Error downloading {url}, error: {error}")
             return False
         os.rename(filepath + ".tmp", filepath)
-    else:
-        pass  # skipping download of existing file
     return True
 
 
@@ -178,9 +176,7 @@ def laser_scanner_point_clouds_for_visit_id(visit_id: int, download_dir: Path) -
         point_cloud_to_visit_id_mapping["visit_id"] == visit_id,
         ["laser_scanner_point_clouds_id"],
     ]
-    point_cloud_ids_list = [scan_id[0] for scan_id in point_cloud_ids.values]
-
-    return point_cloud_ids_list
+    return [scan_id[0] for scan_id in point_cloud_ids.values]
 
 
 def download_laser_scanner_point_clouds(laser_scanner_point_cloud_id: str, visit_id: int, download_dir: Path) -> None:
@@ -198,15 +194,18 @@ def download_laser_scanner_point_clouds(laser_scanner_point_cloud_id: str, visit
 
 def get_metadata(dataset: str, download_dir: Path) -> pd.DataFrame:
     filename = "metadata.csv"
-    url = f"{ARkitscense_url}/threedod/{filename}" if "3dod" == dataset else f"{ARkitscense_url}/{dataset}/{filename}"
+    url = (
+        f"{ARkitscense_url}/threedod/{filename}"
+        if dataset == "3dod"
+        else f"{ARkitscense_url}/{dataset}/{filename}"
+    )
     dst_folder = download_dir / dataset
     dst_file = dst_folder / filename
 
     if not download_file(url, filename, dst_folder):
         return
 
-    metadata = pd.read_csv(dst_file)
-    return metadata
+    return pd.read_csv(dst_file)
 
 
 def download_data(
@@ -241,20 +240,20 @@ def download_data(
     for video_id in sorted(set(video_ids)):
         split = dataset_splits[video_ids.index(video_id)]
         dst_dir = download_dir / dataset / split
-        if dataset == "raw":
-            url_prefix = ""
-            file_names = []
-            if not raw_dataset_assets:
-                print(f"Warning: No raw assets given for video id {video_id}")
-            else:
-                dst_dir = dst_dir / str(video_id)
-                url_prefix = f"{ARkitscense_url}/raw/{split}/{video_id}" + "/{}"
-                file_names = raw_files(video_id, raw_dataset_assets, metadata)
-        elif dataset == "3dod":
+        if dataset == "3dod":
             url_prefix = f"{ARkitscense_url}/threedod/{split}" + "/{}"
             file_names = [
                 f"{video_id}.zip",
             ]
+        elif dataset == "raw":
+            url_prefix = ""
+            file_names = []
+            if raw_dataset_assets:
+                dst_dir = dst_dir / str(video_id)
+                url_prefix = f"{ARkitscense_url}/raw/{split}/{video_id}" + "/{}"
+                file_names = raw_files(video_id, raw_dataset_assets, metadata)
+            else:
+                print(f"Warning: No raw assets given for video id {video_id}")
         elif dataset == "upsampling":
             url_prefix = f"{ARkitscense_url}/upsampling/{split}" + "/{}"
             file_names = [
@@ -273,8 +272,6 @@ def download_data(
 
             if not file_name.endswith(".zip") or not os.path.isdir(dst_path[: -len(".zip")]):
                 download_file(url, dst_path, dst_dir)
-            else:
-                pass  # skipping download of existing zip file
             if file_name.endswith(".zip") and os.path.isfile(dst_path):
                 unzip_file(file_name, dst_dir, keep_zip)
 

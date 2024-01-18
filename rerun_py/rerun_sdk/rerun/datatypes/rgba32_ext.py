@@ -62,7 +62,7 @@ class Rgba32Ext:
     def native_to_pa_array_override(data: Rgba32ArrayLike, data_type: pa.DataType) -> pa.Array:
         from . import Rgba32
 
-        if isinstance(data, int) or isinstance(data, Rgba32):
+        if isinstance(data, (int, Rgba32)):
             # A single packed int or Rgba32 (which implements __int__())
             int_array = np.array([data])
         elif isinstance(data, Sequence) and len(data) == 0:
@@ -77,14 +77,8 @@ class Rgba32Ext:
                     # these are already packed values
                     int_array = arr.flatten()
                 else:
-                    # these are component values
                     if len(arr.shape) == 1:
-                        if arr.size > 4:
-                            # multiple RGBA colors
-                            arr = arr.reshape((-1, 4))
-                        else:
-                            # a single color
-                            arr = arr.reshape((1, -1))
+                        arr = arr.reshape((-1, 4)) if arr.size > 4 else arr.reshape((1, -1))
                     int_array = _numpy_array_to_u32(arr)
             except (ValueError, TypeError, IndexError):
                 # Fallback support

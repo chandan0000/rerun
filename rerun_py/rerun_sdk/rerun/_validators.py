@@ -18,7 +18,9 @@ def find_non_empty_dim_indices(shape: list[int]) -> list[int]:
     # [1, 1, 1, 640, 480, 3, 1, 1, 1]
     #           ^---------^   goal range
 
-    non_unit_indices = list(d[0] for d in filter(lambda d: d[1] != 1, enumerate(shape)))
+    non_unit_indices = [
+        d[0] for d in filter(lambda d: d[1] != 1, enumerate(shape))
+    ]
 
     # 0 is always a valid index.
     min = next(iter(non_unit_indices), 0)
@@ -32,15 +34,12 @@ def find_non_empty_dim_indices(shape: list[int]) -> list[int]:
     while max - min < 1 and max + 1 < len(shape):
         max += 1
 
-    target_len = 2
-    if shape[max] in (3, 4):
-        target_len = 3
-
+    target_len = 3 if shape[max] in (3, 4) else 2
     # Next, consider empty outer dimensions if we still need them.
     # Grow up to 3 if the inner dimension is already 3 or 4 (Color Images)
     # Otherwise, only grow up to 2.
     # (1x1x3) -> 1x1x3 rgb rather than 1x3 mono
-    while max - min + 1 < target_len and 0 < min:
+    while max - min + 1 < target_len and min > 0:
         min -= 1
 
     return list(range(min, max + 1))

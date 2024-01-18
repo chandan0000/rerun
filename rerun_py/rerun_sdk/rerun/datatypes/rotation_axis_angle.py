@@ -24,10 +24,7 @@ __all__ = [
 
 
 def _rotation_axis_angle__axis__special_field_converter_override(x: datatypes.Vec3DLike) -> datatypes.Vec3D:
-    if isinstance(x, datatypes.Vec3D):
-        return x
-    else:
-        return datatypes.Vec3D(x)
+    return x if isinstance(x, datatypes.Vec3D) else datatypes.Vec3D(x)
 
 
 @define(init=False)

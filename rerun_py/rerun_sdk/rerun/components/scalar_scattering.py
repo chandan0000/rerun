@@ -37,11 +37,7 @@ class ScalarScattering(ScalarScatteringExt):
     scattered: bool = field(converter=bool)
 
 
-if TYPE_CHECKING:
-    ScalarScatteringLike = Union[ScalarScattering, bool]
-else:
-    ScalarScatteringLike = Any
-
+ScalarScatteringLike = Union[ScalarScattering, bool] if TYPE_CHECKING else Any
 ScalarScatteringArrayLike = Union[ScalarScattering, Sequence[ScalarScatteringLike], bool, npt.NDArray[np.bool_]]
 
 
