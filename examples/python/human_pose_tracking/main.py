@@ -127,9 +127,8 @@ def read_landmark_positions_2d(
 ) -> npt.NDArray[np.float32] | None:
     if results.pose_landmarks is None:
         return None
-    else:
-        normalized_landmarks = [results.pose_landmarks.landmark[lm] for lm in mp.solutions.pose.PoseLandmark]
-        return np.array([(image_width * lm.x, image_height * lm.y) for lm in normalized_landmarks])
+    normalized_landmarks = [results.pose_landmarks.landmark[lm] for lm in mp.solutions.pose.PoseLandmark]
+    return np.array([(image_width * lm.x, image_height * lm.y) for lm in normalized_landmarks])
 
 
 def read_landmark_positions_3d(
@@ -137,9 +136,8 @@ def read_landmark_positions_3d(
 ) -> npt.NDArray[np.float32] | None:
     if results.pose_landmarks is None:
         return None
-    else:
-        landmarks = [results.pose_world_landmarks.landmark[lm] for lm in mp.solutions.pose.PoseLandmark]
-        return np.array([(lm.x, lm.y, lm.z) for lm in landmarks])
+    landmarks = [results.pose_world_landmarks.landmark[lm] for lm in mp.solutions.pose.PoseLandmark]
+    return np.array([(lm.x, lm.y, lm.z) for lm in landmarks])
 
 
 @dataclass

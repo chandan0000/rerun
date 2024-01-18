@@ -208,7 +208,12 @@ def read_images_text(path: Path):
                 camera_id = int(elems[8])
                 image_name = elems[9]
                 elems = fid.readline().split()
-                xys = np.column_stack([tuple(map(float, elems[0::3])), tuple(map(float, elems[1::3]))])
+                xys = np.column_stack(
+                    [
+                        tuple(map(float, elems[::3])),
+                        tuple(map(float, elems[1::3])),
+                    ]
+                )
                 point3D_ids = np.array(tuple(map(int, elems[2::3])))
                 images[image_id] = Image(
                     id=image_id,
@@ -244,7 +249,12 @@ def read_images_binary(path_to_model_file: Path) -> Mapping[int, Image]:
                 current_char = read_next_bytes(fid, 1, "c")[0]
             num_points2D = read_next_bytes(fid, num_bytes=8, format_char_sequence="Q")[0]
             x_y_id_s = read_next_bytes(fid, num_bytes=24 * num_points2D, format_char_sequence="ddq" * num_points2D)
-            xys = np.column_stack([tuple(map(float, x_y_id_s[0::3])), tuple(map(float, x_y_id_s[1::3]))])
+            xys = np.column_stack(
+                [
+                    tuple(map(float, x_y_id_s[::3])),
+                    tuple(map(float, x_y_id_s[1::3])),
+                ]
+            )
             point3D_ids = np.array(tuple(map(int, x_y_id_s[2::3])))
             images[image_id] = Image(
                 id=image_id,
@@ -282,9 +292,10 @@ def write_images_text(images, path):
             first_line = " ".join(map(str, image_header))
             fid.write(first_line + "\n")
 
-            points_strings = []
-            for xy, point3D_id in zip(img.xys, img.point3D_ids):
-                points_strings.append(" ".join(map(str, [*xy, point3D_id])))
+            points_strings = [
+                " ".join(map(str, [*xy, point3D_id]))
+                for xy, point3D_id in zip(img.xys, img.point3D_ids)
+            ]
             fid.write(" ".join(points_strings) + "\n")
 
 
@@ -353,7 +364,7 @@ def read_points3D_binary(path_to_model_file: Path) -> Mapping[int, Point3D]:
             error = np.array(binary_point_line_properties[7])
             track_length = read_next_bytes(fid, num_bytes=8, format_char_sequence="Q")[0]
             track_elems = read_next_bytes(fid, num_bytes=8 * track_length, format_char_sequence="ii" * track_length)
-            image_ids = np.array(tuple(map(int, track_elems[0::2])))
+            image_ids = np.array(tuple(map(int, track_elems[::2])))
             point2D_idxs = np.array(tuple(map(int, track_elems[1::2])))
             points3D[point3D_id] = Point3D(
                 id=point3D_id, xyz=xyz, rgb=rgb, error=error, image_ids=image_ids, point2D_idxs=point2D_idxs
@@ -382,9 +393,10 @@ def write_points3D_text(points3D, path):
         for _, pt in points3D.items():
             point_header = [pt.id, *pt.xyz, *pt.rgb, pt.error]
             fid.write(" ".join(map(str, point_header)) + " ")
-            track_strings = []
-            for image_id, point2D in zip(pt.image_ids, pt.point2D_idxs):
-                track_strings.append(" ".join(map(str, [image_id, point2D])))
+            track_strings = [
+                " ".join(map(str, [image_id, point2D]))
+                for image_id, point2D in zip(pt.image_ids, pt.point2D_idxs)
+            ]
             fid.write(" ".join(track_strings) + "\n")
 
 
@@ -409,8 +421,8 @@ def write_points3D_binary(points3D, path_to_model_file):
 
 def detect_model_format(path: Path, ext: str) -> bool:
     parts = ["cameras", "images", "points3D"]
-    if all([(path / p).with_suffix(ext) for p in parts]):
-        print("Detected model format: '" + ext + "'")
+    if all((path / p).with_suffix(ext) for p in parts):
+        print(f"Detected model format: '{ext}'")
         return True
 
     return False
@@ -418,7 +430,7 @@ def detect_model_format(path: Path, ext: str) -> bool:
 
 def read_model(path: Path, ext: str = ""):
     # try to detect the extension automatically
-    if ext == "":
+    if not ext:
         if detect_model_format(path, ".bin"):
             ext = ".bin"
         elif detect_model_format(path, ".txt"):
@@ -440,12 +452,12 @@ def read_model(path: Path, ext: str = ""):
 
 def write_model(cameras, images, points3D, path, ext=".bin"):
     if ext == ".txt":
-        write_cameras_text(cameras, os.path.join(path, "cameras" + ext))
-        write_images_text(images, os.path.join(path, "images" + ext))
+        write_cameras_text(cameras, os.path.join(path, f"cameras{ext}"))
+        write_images_text(images, os.path.join(path, f"images{ext}"))
         write_points3D_text(points3D, os.path.join(path, "points3D") + ext)
     else:
-        write_cameras_binary(cameras, os.path.join(path, "cameras" + ext))
-        write_images_binary(images, os.path.join(path, "images" + ext))
+        write_cameras_binary(cameras, os.path.join(path, f"cameras{ext}"))
+        write_images_binary(images, os.path.join(path, f"images{ext}"))
         write_points3D_binary(points3D, os.path.join(path, "points3D") + ext)
     return cameras, images, points3D
 

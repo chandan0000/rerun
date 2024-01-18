@@ -44,11 +44,7 @@ class TensorData(TensorDataExt):
     buffer: datatypes.TensorBuffer = field(converter=_tensor_data__buffer__special_field_converter_override)
 
 
-if TYPE_CHECKING:
-    TensorDataLike = Union[TensorData, npt.ArrayLike]
-else:
-    TensorDataLike = Any
-
+TensorDataLike = Union[TensorData, npt.ArrayLike] if TYPE_CHECKING else Any
 TensorDataArrayLike = Union[TensorData, Sequence[TensorDataLike], npt.ArrayLike]
 
 

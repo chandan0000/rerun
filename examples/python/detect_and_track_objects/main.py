@@ -373,7 +373,7 @@ def track_objects(video_path: str, *, max_frame_count: int | None) -> None:
 
     detector = Detector(coco_categories=coco_categories)
 
-    logging.info("Loading input video: %s", str(video_path))
+    logging.info("Loading input video: %s", video_path)
     cap = cv2.VideoCapture(video_path)
     frame_idx = 0
 

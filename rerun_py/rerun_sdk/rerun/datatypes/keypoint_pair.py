@@ -18,17 +18,11 @@ __all__ = ["KeypointPair", "KeypointPairArrayLike", "KeypointPairBatch", "Keypoi
 
 
 def _keypoint_pair__keypoint0__special_field_converter_override(x: datatypes.KeypointIdLike) -> datatypes.KeypointId:
-    if isinstance(x, datatypes.KeypointId):
-        return x
-    else:
-        return datatypes.KeypointId(x)
+    return x if isinstance(x, datatypes.KeypointId) else datatypes.KeypointId(x)
 
 
 def _keypoint_pair__keypoint1__special_field_converter_override(x: datatypes.KeypointIdLike) -> datatypes.KeypointId:
-    if isinstance(x, datatypes.KeypointId):
-        return x
-    else:
-        return datatypes.KeypointId(x)
+    return x if isinstance(x, datatypes.KeypointId) else datatypes.KeypointId(x)
 
 
 @define(init=False)

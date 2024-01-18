@@ -35,11 +35,9 @@ class LineStrip2DExt:
                 inner = Vec2DBatch(data.reshape(-1)).as_arrow_array().storage
                 return pa.ListArray.from_arrays(offsets, inner, type=data_type)
 
-        # pure-object
         elif isinstance(data, LineStrip2D):
             inners = [Vec2DBatch(data.points).as_arrow_array().storage]
 
-        # sequences
         elif isinstance(data, Sequence):
             if len(data) == 0:
                 inners = []
@@ -54,22 +52,19 @@ class LineStrip2DExt:
                         raise ValueError(
                             "Expected a sequence of sequences of 2D vectors, but the inner sequence length was not equal to 2."
                         )
-                # It could be a sequence of the style `[np.array([0, 0]), np.array([1, 1])]` which is a single strip.
                 elif isinstance(data[0], np.ndarray) and data[0].shape == (2,):
                     # If any of the following elements are not np arrays of shape 2, Vec2DBatch should raise an error.
                     inners = [Vec2DBatch(data).as_arrow_array().storage]  # type: ignore[arg-type]
-                # .. otherwise assume that it's several strips.
                 else:
 
                     def to_vec2d_batch(strip: Any) -> Vec2DBatch:
                         if isinstance(strip, LineStrip2D):
                             return Vec2DBatch(strip.points)
-                        else:
-                            if isinstance(strip, np.ndarray) and (strip.ndim != 2 or strip.shape[1] != 2):
-                                raise ValueError(
-                                    "Expected a sequence of 2D vectors, instead got array with shape {strip.shape}."
-                                )
-                            return Vec2DBatch(strip)
+                        if isinstance(strip, np.ndarray) and (strip.ndim != 2 or strip.shape[1] != 2):
+                            raise ValueError(
+                                "Expected a sequence of 2D vectors, instead got array with shape {strip.shape}."
+                            )
+                        return Vec2DBatch(strip)
 
                     inners = [to_vec2d_batch(strip).as_arrow_array().storage for strip in data]
         else:

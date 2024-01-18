@@ -38,11 +38,7 @@ class Radius(RadiusExt):
         return float(self.value)
 
 
-if TYPE_CHECKING:
-    RadiusLike = Union[Radius, float]
-else:
-    RadiusLike = Any
-
+RadiusLike = Union[Radius, float] if TYPE_CHECKING else Any
 RadiusArrayLike = Union[Radius, Sequence[RadiusLike], float, npt.ArrayLike]
 
 

@@ -25,9 +25,7 @@ DOWNLOADED_DIR: Final = Path(os.path.dirname(__file__)) / "dataset"
 
 def ensure_mesh_downloaded(mesh_name: str) -> Path:
     path = find_mesh_path_if_downloaded(mesh_name)
-    if path is not None:
-        return path
-    return download_mesh(mesh_name)
+    return path if path is not None else download_mesh(mesh_name)
 
 
 def download_mesh(name: str) -> Path:

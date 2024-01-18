@@ -47,11 +47,7 @@ class ClearIsRecursive(ClearIsRecursiveExt):
     # (Docstring intentionally commented out to hide this field from the docs)
 
 
-if TYPE_CHECKING:
-    ClearIsRecursiveLike = Union[ClearIsRecursive, bool]
-else:
-    ClearIsRecursiveLike = Any
-
+ClearIsRecursiveLike = Union[ClearIsRecursive, bool] if TYPE_CHECKING else Any
 ClearIsRecursiveArrayLike = Union[ClearIsRecursive, Sequence[ClearIsRecursiveLike], bool, npt.NDArray[np.bool_]]
 
 

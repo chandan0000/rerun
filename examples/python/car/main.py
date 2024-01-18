@@ -242,15 +242,13 @@ def generate_car_data(num_frames: int) -> Iterator[SampleFrame]:
         depth_image_mm = depth_background_mm.copy()
         rgb = rgb_background.copy()
         car.draw(depth_image_mm=depth_image_mm, rgb=rgb)
-        sample = SampleFrame(
+        yield SampleFrame(
             frame_idx=i,
             camera=camera.parameters,
             depth_image_mm=depth_image_mm,
             rgb_image=rgb,
             car_bbox=(car.min, car.size),
         )
-
-        yield sample
         car.drive_one_step()
 
 

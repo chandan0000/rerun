@@ -53,10 +53,7 @@ class RotationAxisAngleExt:
     def angle__field_converter_override(x: AngleLike) -> Angle:
         from . import Angle
 
-        if isinstance(x, Angle):
-            return x
-        else:
-            return Angle(rad=x)
+        return x if isinstance(x, Angle) else Angle(rad=x)
 
     @staticmethod
     def native_to_pa_array_override(data: RotationAxisAngleArrayLike, data_type: pa.DataType) -> pa.Array:

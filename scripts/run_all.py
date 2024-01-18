@@ -118,32 +118,31 @@ def collect_examples(fast: bool) -> list[str]:
             "examples/python/signed_distance_fields",
             "examples/python/structure_from_motion",
         ]
-    else:
-        examples = []
-        for main_path in glob("examples/python/**/main.py"):
-            example = os.path.dirname(main_path)
+    examples = []
+    for main_path in glob("examples/python/**/main.py"):
+        example = os.path.dirname(main_path)
 
-            if example in SKIP_LIST:
+        if example in SKIP_LIST:
+            continue
+
+        major, minor, *_ = sys.version_info
+
+        if example in MIN_PYTHON_REQUIREMENTS:
+            req_major, req_minor = MIN_PYTHON_REQUIREMENTS[example]
+            if major < req_major or (major == req_major and minor < req_minor):
                 continue
 
-            major, minor, *_ = sys.version_info
-
-            if example in MIN_PYTHON_REQUIREMENTS:
-                req_major, req_minor = MIN_PYTHON_REQUIREMENTS[example]
-                if major < req_major or (major == req_major and minor < req_minor):
-                    continue
-
-            if example in MAX_PYTHON_REQUIREMENTS:
-                req_major, req_minor = MAX_PYTHON_REQUIREMENTS[example]
-                if major > req_major or (major == req_major and minor > req_minor):
-                    continue
-
-            if example in MAC_SKIP_LIST and sys.platform == "darwin":
+        if example in MAX_PYTHON_REQUIREMENTS:
+            req_major, req_minor = MAX_PYTHON_REQUIREMENTS[example]
+            if major > req_major or (major == req_major and minor > req_minor):
                 continue
 
-            examples.append(example)
+        if example in MAC_SKIP_LIST and sys.platform == "darwin":
+            continue
 
-        return examples
+        examples.append(example)
+
+    return examples
 
 
 def print_example_output(path: str, example: Any) -> None:

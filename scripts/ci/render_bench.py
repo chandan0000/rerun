@@ -149,7 +149,7 @@ def collect_benchmark_data(
 
     previous_entry: BenchmarkEntry | None = None
     for v in reversed(commits):
-        short_sha = v.commit[0:7]
+        short_sha = v.commit[:7]
 
         path = short_sha_to_path(short_sha)
         if path not in bucket:
@@ -240,10 +240,7 @@ def render_html(title: str, benchmarks: Benchmarks) -> str:
 
     def label(entry: BenchmarkEntry) -> str:
         date = entry.date.strftime("%Y-%m-%d")
-        if entry.is_duplicate:
-            return f"{date}"
-        else:
-            return f"{entry.commit[0:7]} {date}"
+        return f"{date}" if entry.is_duplicate else f"{entry.commit[:7]} {date}"
 
     chartjs = {}
     for name, benchmark in benchmarks.items():
@@ -308,12 +305,10 @@ class Output(Enum):
     GCS = "gcs"
     FILE = "file"
 
-    def parse(o: str) -> Output:
-        if o == "-":
+    def parse(self) -> Output:
+        if self == "-":
             return Output.STDOUT
-        if o.startswith("gs://"):
-            return Output.GCS
-        return Output.FILE
+        return Output.GCS if self.startswith("gs://") else Output.FILE
 
 
 @dataclass
@@ -339,7 +334,7 @@ def main() -> None:
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument("target", type=Target, choices=list(Target), help="Which benchmark to render")
-    _30_days_ago = datetime.today() - timedelta(days=30)
+    _30_days_ago = datetime.now() - timedelta(days=30)
     parser.add_argument(
         "--after",
         type=date_type,

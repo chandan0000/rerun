@@ -34,7 +34,7 @@ class AngleExt:
     def native_to_pa_array_override(data: AngleArrayLike, data_type: pa.DataType) -> pa.Array:
         from . import Angle
 
-        if isinstance(data, Angle) or isinstance(data, float):
+        if isinstance(data, (Angle, float)):
             data = [data]
 
         types: list[int] = []

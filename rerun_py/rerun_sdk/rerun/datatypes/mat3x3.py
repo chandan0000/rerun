@@ -70,11 +70,7 @@ class Mat3x3(Mat3x3Ext):
         return np.asarray(self.flat_columns, dtype=dtype)
 
 
-if TYPE_CHECKING:
-    Mat3x3Like = Union[Mat3x3, npt.ArrayLike]
-else:
-    Mat3x3Like = Any
-
+Mat3x3Like = Union[Mat3x3, npt.ArrayLike] if TYPE_CHECKING else Any
 Mat3x3ArrayLike = Union[
     Mat3x3,
     Sequence[Mat3x3Like],

@@ -29,14 +29,12 @@ def load_urdf_from_msg(msg: String) -> URDF:
 
 def log_scene(scene: trimesh.Scene, node: str, path: str | None = None, timeless: bool = False) -> None:
     """Log a trimesh scene to rerun."""
-    path = path + "/" + node if path else node
+    path = f"{path}/{node}" if path else node
 
     parent = scene.graph.transforms.parents.get(node)
     children = scene.graph.transforms.children.get(node)
 
-    node_data = scene.graph.get(frame_to=node, frame_from=parent)
-
-    if node_data:
+    if node_data := scene.graph.get(frame_to=node, frame_from=parent):
         # Log the transform between this node and its direct parent (if it has one!).
         if parent:
             world_from_mesh = node_data[0]
@@ -49,9 +47,7 @@ def log_scene(scene: trimesh.Scene, node: str, path: str | None = None, timeless
                 timeless=timeless,
             )
 
-        # Log this node's mesh, if it has one.
-        mesh = cast(trimesh.Trimesh, scene.geometry.get(node_data[1]))
-        if mesh:
+        if mesh := cast(trimesh.Trimesh, scene.geometry.get(node_data[1])):
             # If vertex colors are set, use the average color as the albedo factor
             # for the whole mesh.
             vertex_colors = None

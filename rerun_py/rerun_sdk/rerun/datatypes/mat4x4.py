@@ -72,11 +72,7 @@ class Mat4x4(Mat4x4Ext):
         return np.asarray(self.flat_columns, dtype=dtype)
 
 
-if TYPE_CHECKING:
-    Mat4x4Like = Union[Mat4x4, npt.ArrayLike]
-else:
-    Mat4x4Like = Any
-
+Mat4x4Like = Union[Mat4x4, npt.ArrayLike] if TYPE_CHECKING else Any
 Mat4x4ArrayLike = Union[
     Mat4x4,
     Sequence[Mat4x4Like],

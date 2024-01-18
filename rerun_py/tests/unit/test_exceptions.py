@@ -101,18 +101,13 @@ def test_stack_tracking() -> None:
     with pytest.warns(RerunWarning) as warnings:
         starting_msgs = mem.num_msgs()
 
-        value = 0
         with catch_and_log_exceptions("some context", depth_to_user_code=0):
             raise ValueError("some value error")
-            value = 42
-
         if sys.version_info < (3, 10):
             expected_line = get_line_number() - 3  # the last line of the context block
         else:
             expected_line = get_line_number() - 7  # the open of the context manager
         expected_warnings(warnings, mem, starting_msgs, 1, expected_line)
-        # value wasn't changed because an exception was raised
-        assert value == 0
         assert "some context" in str(warnings[0].message)
 
 

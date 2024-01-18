@@ -17,10 +17,7 @@ def _keypoint_pair_converter(
 ) -> KeypointPair:
     from . import KeypointPair
 
-    if isinstance(data, KeypointPair):
-        return data
-    else:
-        return KeypointPair(*data)
+    return data if isinstance(data, KeypointPair) else KeypointPair(*data)
 
 
 class KeypointPairExt:

@@ -38,11 +38,7 @@ class InstanceKey(InstanceKeyExt):
         return int(self.value)
 
 
-if TYPE_CHECKING:
-    InstanceKeyLike = Union[InstanceKey, int]
-else:
-    InstanceKeyLike = Any
-
+InstanceKeyLike = Union[InstanceKey, int] if TYPE_CHECKING else Any
 InstanceKeyArrayLike = Union[InstanceKey, Sequence[InstanceKeyLike], int, npt.NDArray[np.uint64]]
 
 

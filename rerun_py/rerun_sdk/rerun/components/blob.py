@@ -38,11 +38,7 @@ class Blob(BlobExt):
         return np.asarray(self.data, dtype=dtype)
 
 
-if TYPE_CHECKING:
-    BlobLike = Union[Blob, bytes, npt.NDArray[np.uint8]]
-else:
-    BlobLike = Any
-
+BlobLike = Union[Blob, bytes, npt.NDArray[np.uint8]] if TYPE_CHECKING else Any
 BlobArrayLike = Union[Blob, Sequence[BlobLike], bytes, npt.NDArray[np.uint8]]
 
 

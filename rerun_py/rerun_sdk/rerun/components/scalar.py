@@ -42,11 +42,7 @@ class Scalar(ScalarExt):
         return float(self.value)
 
 
-if TYPE_CHECKING:
-    ScalarLike = Union[Scalar, float]
-else:
-    ScalarLike = Any
-
+ScalarLike = Union[Scalar, float] if TYPE_CHECKING else Any
 ScalarArrayLike = Union[Scalar, Sequence[ScalarLike], float, npt.NDArray[np.float64]]
 
 

@@ -18,17 +18,16 @@ _TFunc = TypeVar("_TFunc", bound=Callable[..., Any])
 
 
 def default_strict_mode() -> bool:
-    if "RERUN_STRICT" in os.environ:
-        var = os.environ["RERUN_STRICT"].lower()
-        if var in ("0", "false", "off", "no"):
-            return False
-        elif var in ("1", "true", "on", "yes"):
-            return True
-        else:
-            print(f"Expected RERUN_STRICT to be one of 0/1 false/true off/on no/yes, found {var}")
-            return _strict_mode
-    else:
+    if "RERUN_STRICT" not in os.environ:
         return False
+    var = os.environ["RERUN_STRICT"].lower()
+    if var in ("0", "false", "off", "no"):
+        return False
+    elif var in ("1", "true", "on", "yes"):
+        return True
+    else:
+        print(f"Expected RERUN_STRICT to be one of 0/1 false/true off/on no/yes, found {var}")
+        return _strict_mode
 
 
 # If `True`, we raise exceptions on use error (wrong parameter types, etc.).
@@ -205,20 +204,21 @@ class catch_and_log_exceptions:
         exc_tb: TracebackType | None,
     ) -> bool:
         try:
-            # Exceptions inheriting from `BaseException` others than via `Exception` are "exiting", and should be pass
-            # through. This includes `KeyboardInterrupt` and `SystemExit`.
-            if exc_type is not None and issubclass(exc_type, Exception) and not strict_mode():
-                if getattr(_rerun_exception_ctx, "pending_warnings", None) is None:
-                    _rerun_exception_ctx.pending_warnings = []
-
-                context = f"{self.context}: " if self.context is not None else ""
-
-                warning_message = f"{context}{exc_type.__name__}({exc_val})"
-
-                _rerun_exception_ctx.pending_warnings.append(warning_message)
-                return True
-            else:
+            if (
+                exc_type is None
+                or not issubclass(exc_type, Exception)
+                or strict_mode()
+            ):
                 return False
+            if getattr(_rerun_exception_ctx, "pending_warnings", None) is None:
+                _rerun_exception_ctx.pending_warnings = []
+
+            context = f"{self.context}: " if self.context is not None else ""
+
+            warning_message = f"{context}{exc_type.__name__}({exc_val})"
+
+            _rerun_exception_ctx.pending_warnings.append(warning_message)
+            return True
         finally:
             if getattr(_rerun_exception_ctx, "depth", None) is not None:
                 _rerun_exception_ctx.depth -= 1

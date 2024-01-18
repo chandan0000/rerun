@@ -101,8 +101,7 @@ def fetch_pr_info(pr_number: int) -> PrInfo | None:
 
 
 def get_commit_info(commit: Any) -> CommitInfo:
-    match = re.match(r"(.*) \(#(\d+)\)", commit.summary)
-    if match:
+    if match := re.match(r"(.*) \(#(\d+)\)", commit.summary):
         return CommitInfo(
             hexsha=commit.hexsha,
             title=str(match.group(1)),
@@ -113,7 +112,7 @@ def get_commit_info(commit: Any) -> CommitInfo:
 
 
 def print_section(title: str, items: list[str]) -> None:
-    if 0 < len(items):
+    if items:
         print(f"#### {title}")
         for line in items:
             print(f"- {line}")
@@ -196,7 +195,7 @@ def main() -> None:
 
             chronological.append(f"{summary} {hexsha}")
 
-            if INCLUDE_LABELS and 0 < len(labels):
+            if INCLUDE_LABELS and len(labels) > 0:
                 summary += f" ({', '.join(labels)})"
 
             if pr_info is not None:
@@ -255,7 +254,7 @@ def main() -> None:
                     rfc.append(summary)
                 elif "dependencies" in labels:
                     dependencies.append(summary)
-                elif not added:
+                else:
                     misc.append(summary)
 
     print()

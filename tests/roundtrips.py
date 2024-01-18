@@ -7,6 +7,7 @@ The list of archetypes is read directly from `crates/re_types/definitions/rerun/
 If you create a new archetype definition without end-to-end tests, this will fail.
 """
 
+
 from __future__ import annotations
 
 import argparse
@@ -17,7 +18,7 @@ import time
 from os import listdir
 from os.path import isfile, join
 
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../scripts/")
+sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}/../scripts/")
 from roundtrip_utils import cmake_build, cmake_configure, cpp_build_dir, roundtrip_env, run, run_comparison  # noqa
 
 ARCHETYPES_PATH = "crates/re_types/definitions/rerun/archetypes"

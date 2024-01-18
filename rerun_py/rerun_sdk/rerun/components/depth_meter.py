@@ -38,11 +38,7 @@ class DepthMeter(DepthMeterExt):
         return float(self.value)
 
 
-if TYPE_CHECKING:
-    DepthMeterLike = Union[DepthMeter, float]
-else:
-    DepthMeterLike = Any
-
+DepthMeterLike = Union[DepthMeter, float] if TYPE_CHECKING else Any
 DepthMeterArrayLike = Union[DepthMeter, Sequence[DepthMeterLike], float, npt.NDArray[np.float32]]
 
 

@@ -53,11 +53,7 @@ class Transform3DExt:
         """
 
         with catch_and_log_exceptions(context=self.__class__.__name__):
-            if transform is not None:
-                if translation is not None or rotation is not None or scale is not None or mat3x3 is not None:
-                    raise ValueError("If a transform is given, none of the other parameters can be set.")
-                self.__attrs_init__(transform=transform)
-            else:
+            if transform is None:
                 if rotation is not None and mat3x3 is not None:
                     raise ValueError("Rotation and mat3x3 parameters are mutually exclusive.")
                 if scale is not None and mat3x3 is not None:
@@ -73,6 +69,10 @@ class Transform3DExt:
                             translation=translation, rotation=rotation, scale=scale, from_parent=from_parent
                         )
                     )
+            elif translation is not None or rotation is not None or scale is not None or mat3x3 is not None:
+                raise ValueError("If a transform is given, none of the other parameters can be set.")
+            else:
+                self.__attrs_init__(transform=transform)
             return
 
         self.__attrs_clear__()

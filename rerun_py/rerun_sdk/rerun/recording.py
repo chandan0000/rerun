@@ -71,13 +71,15 @@ class MemoryRecording:
             app_url = bindings.get_app_url()
 
         # Use a random presentation ID to avoid collisions when multiple recordings are shown in the same notebook.
-        presentation_id = "".join(random.choice(string.ascii_letters) for i in range(6))
+        presentation_id = "".join(
+            random.choice(string.ascii_letters) for _ in range(6)
+        )
 
         if other:
             other = other.storage
         base64_data = base64.b64encode(self.storage.concat_as_bytes(other)).decode("utf-8")
 
-        html_template = f"""
+        return f"""
         <div id="{presentation_id}_rrd" style="display: none;" data-rrd="{base64_data}"></div>
         <div id="{presentation_id}_error" style="display: none;"><p>Timed out waiting for {app_url} to load.</p>
         <p>Consider using <code>rr.start_web_viewer_server()</code></p></div>
@@ -113,8 +115,6 @@ class MemoryRecording:
             src="{app_url}?url=web_event://&persist=0&notebook=1"
             frameborder="0" style="display: none;" allowfullscreen=""></iframe>
         """
-
-        return html_template
 
     def show(
         self,

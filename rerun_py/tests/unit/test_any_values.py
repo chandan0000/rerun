@@ -33,6 +33,7 @@ def test_any_value_datatypes() -> None:
 
 
 def test_bad_any_value() -> None:
+
     class Foo:
         pass
 
@@ -41,7 +42,7 @@ def test_bad_any_value() -> None:
 
         batches = list(values.as_component_batches())
 
-        assert len(batches) == 0
+        assert not batches
         assert len(warnings) == 1
         assert "Converting data for 'bad_data':" in str(warnings[0].message)
 
@@ -58,7 +59,7 @@ def test_bad_any_value() -> None:
 
         batches = list(values.as_component_batches())
 
-        assert len(batches) == 0
+        assert not batches
         assert len(warnings) == 1
 
         assert "Converting data for 'good_data':" in str(warnings[0].message)
@@ -70,14 +71,14 @@ def test_none_any_value() -> None:
         values = rr.AnyValues(none_data=None)
         batches = list(values.as_component_batches())
 
-        assert len(batches) == 0
+        assert not batches
         assert len(warnings) == 0
 
         # Log as None -- ignored with warning
         values = rr.AnyValues(none_data=None, drop_untyped_nones=False)
         batches = list(values.as_component_batches())
 
-        assert len(batches) == 0
+        assert not batches
         assert len(warnings) == 1
 
         assert (
